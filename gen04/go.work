@@ -1,0 +1,4 @@
+go 1.19
+
+use /home/keith/code/go/bitlib
+use /home/keith/code/go/blcairo
