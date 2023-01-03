@@ -18,7 +18,7 @@ func main() {
 
 	switch renderTarget {
 	case target.Image:
-		render.Image(800, 800, "out.png", renderFrame, 0.5)
+		render.Image(600, 600, "out.png", renderFrame, 0.5)
 		render.ViewImage("out.png")
 		break
 
@@ -80,6 +80,16 @@ func renderFrame(context *cairo.Context, width, height, percent float64) {
 	context.Points(ops, 2)
 	context.LabelPoints(ops, false)
 	context.StrokeMultiLoop(ops)
+	context.StrokeRectangle(185, 235, 110, 60)
+	context.StrokeLine(185, 255, 295, 255)
+	// context.StrokeLine(185, 275, 295, 275)
+	context.SetSourceRGBA(1, 1, 1, 0.6)
+	context.FillText("Debug View", 190, 248)
+	context.FillText("genuary 5, 2023", 190, 270)
+	context.FillText("Keith Peters", 190, 290)
+
+	context.SetSourceWhite()
+
 	for i := 0; i < len(points); i++ {
 		context.DisableDash()
 		c := points[i]
@@ -88,7 +98,6 @@ func renderFrame(context *cairo.Context, width, height, percent float64) {
 		context.StrokeLine(p.X, p.Y, c.X, c.Y)
 		context.FillText(fmt.Sprintf("%.3f", math.Mod(a+offsets[i], blmath.Tau)), c.X-10, c.Y+20)
 	}
-	context.FillText("genuary5 2023", -width/2+5, height/2-5)
 	context.SimpleDash(5, 5)
 	context.StrokePath(ops, true)
 
