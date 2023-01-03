@@ -42,7 +42,7 @@ var offsets []float64
 func init() {
 	for i := 0.0; i < 12; i++ {
 		a := blmath.Tau * i / 12
-		points = append(points, geom.NewPoint(math.Cos(a)*250, math.Sin(a)*250))
+		points = append(points, geom.NewPoint(math.Cos(a)*248, math.Sin(a)*248))
 		offsets = append(offsets, random.FloatRange(0, blmath.Tau))
 	}
 }
@@ -52,6 +52,7 @@ func renderFrame(context *cairo.Context, width, height, percent float64) {
 	context.SetLineWidth(0.5)
 	context.Save()
 	context.TranslateCenter()
+	context.SelectFontFace("monospace", 0, 0)
 
 	a := blmath.Tau * percent * 2
 	ops := []*geom.Point{}
@@ -63,7 +64,9 @@ func renderFrame(context *cairo.Context, width, height, percent float64) {
 		ops = append(ops, geom.NewPoint(point.X+math.Cos(a+offset)*radius, point.Y+math.Sin(a+offset)*radius))
 	}
 
-	pattern := cairo.CreateRadialGradient(60+math.Cos(a+math.Pi)*40, -100+math.Sin(a+math.Pi)*40, 0, 0, 0, 250)
+	hlx := 60 + math.Cos(a+math.Pi)*40
+	hly := -100 + math.Sin(a+math.Pi)*40
+	pattern := cairo.CreateRadialGradient(hlx, hly, 0, 0, 0, 250)
 	pattern.AddColorStopRGB(0, 1, 1, 1)
 	pattern.AddColorStopRGB(1, 1, 0.5, 0)
 	context.SetSource(pattern)
@@ -75,20 +78,30 @@ func renderFrame(context *cairo.Context, width, height, percent float64) {
 
 	context.Blueprint()
 	context.GridFull(20, 0.1)
-	context.LabelPoints(points, true)
 	context.Points(points, 2)
 	context.Points(ops, 2)
-	context.LabelPoints(ops, false)
 	context.StrokeMultiLoop(ops)
 	context.StrokeRectangle(185, 235, 110, 60)
 	context.StrokeLine(185, 255, 295, 255)
-	// context.StrokeLine(185, 275, 295, 275)
+
 	context.SetSourceRGBA(1, 1, 1, 0.6)
+	context.LabelPoints(points, true)
+	context.LabelPoints(ops, false)
+
 	context.FillText("Debug View", 190, 248)
 	context.FillText("genuary 5, 2023", 190, 270)
-	context.FillText("Keith Peters", 190, 290)
+	context.FillText("by Keith Peters", 190, 290)
+
+	context.FillText("Main Color: #FF8000", -width/2+5, 250)
+	context.FillText("Highlight:  #FFFFFF", -width/2+5, 270)
+	context.FillText("Background: #000000", -width/2+5, 290)
+	context.FillText(fmt.Sprintf("%.3f", math.Mod(a+math.Pi, blmath.Tau)), hlx-10, hly+20)
 
 	context.SetSourceWhite()
+	context.StrokeCircle(60, -100, 40)
+	context.FillCircle(60, -100, 2)
+	context.FillCircle(hlx, hly, 2)
+	context.StrokeLine(hlx, hly, 60, -100)
 
 	for i := 0; i < len(points); i++ {
 		context.DisableDash()
@@ -96,10 +109,17 @@ func renderFrame(context *cairo.Context, width, height, percent float64) {
 		context.StrokeCircle(c.X, c.Y, radius)
 		p := ops[i]
 		context.StrokeLine(p.X, p.Y, c.X, c.Y)
+		context.SetSourceRGBA(1, 1, 1, 0.6)
 		context.FillText(fmt.Sprintf("%.3f", math.Mod(a+offsets[i], blmath.Tau)), c.X-10, c.Y+20)
+		context.SetSourceWhite()
 	}
 	context.SimpleDash(5, 5)
 	context.StrokePath(ops, true)
+
+	for i := 0.0; i < 12; i++ {
+		a := i / 12 * blmath.Tau
+		context.Ray(hlx, hly, a, 20, 50)
+	}
 
 	context.Restore()
 }
