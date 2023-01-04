@@ -77,6 +77,7 @@ func (a particleArray) Less(i, j int) bool {
 }
 
 var particles []*particle
+var easter *cairo.Surface
 
 func init() {
 	colors := cairo.SampleColors("easter.png", 32)
@@ -88,10 +89,13 @@ func init() {
 		p := newParticle(math.Sin(t)*r, random.FloatRange(-500, 500), math.Cos(t)*r, zc, colors[c])
 		particles = append(particles, p)
 	}
+	easter, _ = cairo.NewSurfaceFromPNG("easter.png")
 }
 
 func renderFrame(context *cairo.Context, width, height, percent float64) {
-	context.WhiteOnBlack()
+	context.SetSourceSurface(easter, 1, 1)
+	context.Paint()
+	// context.WhiteOnBlack()
 	context.Save()
 	context.TranslateCenter()
 	for _, p := range particles {
