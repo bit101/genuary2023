@@ -77,23 +77,24 @@ func (a particleArray) Less(i, j int) bool {
 }
 
 var particles []*particle
-var easter *cairo.Surface
+var imgSurface *cairo.Surface
+var image = "graffitti.png"
 
 func init() {
-	colors := cairo.SampleColors("easter.png", 32)
+	colors := cairo.SampleColors(image, 32)
 	zc := 300.0
 	for i := 0; i < 10000; i++ {
-		c := random.IntRange(0, len(colors))
+		c := colors.GetRandom()
 		r := random.FloatRange(100, 300)
 		t := random.FloatRange(0, blmath.Tau)
-		p := newParticle(math.Sin(t)*r, random.FloatRange(-500, 500), math.Cos(t)*r, zc, colors[c])
+		p := newParticle(math.Sin(t)*r, random.FloatRange(-500, 500), math.Cos(t)*r, zc, c)
 		particles = append(particles, p)
 	}
-	easter, _ = cairo.NewSurfaceFromPNG("easter.png")
+	imgSurface, _ = cairo.NewSurfaceFromPNG(image)
 }
 
 func renderFrame(context *cairo.Context, width, height, percent float64) {
-	context.SetSourceSurface(easter, 1, 1)
+	context.SetSourceSurface(imgSurface, 1, 1)
 	context.Paint()
 	// context.WhiteOnBlack()
 	context.Save()
@@ -112,5 +113,5 @@ func renderFrame(context *cairo.Context, width, height, percent float64) {
 	context.Restore()
 	context.SetSourceWhite()
 	context.FillText("genuary7 2023", 5, height-20)
-	context.FillText("palette sampled from Easter by the Patti Smith Group", 5, height-5)
+	context.FillText("palette sampled from Physical Graffiti by Led Zeppelin", 5, height-5)
 }
