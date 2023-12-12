@@ -23,7 +23,7 @@ func main() {
 
 	case target.Gif:
 		render.Frames(400, 400, 60, "frames", renderFrame)
-		render.MakeGIF("ffmpeg", "frames", "out.gif", 30)
+		render.MakeGIF("ffmpeg", "frames", "out.gif", 400, 400, 30, 2)
 		render.ViewImage("out.gif")
 		break
 
@@ -31,8 +31,8 @@ func main() {
 		w := 600.0
 		h := 600.0
 		render.Frames(w, h, 240, "frames", renderFrame)
-		render.ConvertToVideo("frames", "out.mp4", int(w), int(h), 30)
-		render.MPV("out.mp4", true)
+		render.ConvertToVideo("frames", "out.mp4", w, h, 30, 8)
+		render.PlayVideo("out.mp4")
 		break
 	}
 }
